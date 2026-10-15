@@ -62,6 +62,7 @@ function apiConvert(req, res) {
     // 不加的話 iPhone HDR 影片會遺失 Dolby Vision 標記（HLG 基礎層仍在）。
     const ff = spawn(FFMPEG, ['-hide_banner', '-nostdin', '-y', '-i', inPath,
       '-map', '0:v', '-map', '0:a?', '-c', 'copy',
+      '-map_metadata', '0',          // 保留拍攝時間（相簿 App 用來排序）；不含定位與機型等資料
       '-strict', 'unofficial', '-movflags', '+faststart', outPath]);
     let log = '';
     ff.stderr.on('data', d => { log += d.toString(); if (log.length > 20000) log = log.slice(-10000); });

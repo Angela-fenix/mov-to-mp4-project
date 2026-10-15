@@ -1,365 +1,710 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MOV 轉 MP4（無損轉檔）</title>
-<style>
-  :root{
-    --bg:#f5f6f8; --card:#ffffff; --text:#1c1e21; --muted:#6b7280;
-    --primary:#2563eb; --primary-text:#ffffff; --border:#d9dde3;
-    --ok:#15803d; --warn:#b45309; --err:#b91c1c;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#14161a; --card:#1e2127; --text:#eceef1; --muted:#9aa3b0;
-      --primary:#3b82f6; --primary-text:#ffffff; --border:#343944;
-      --ok:#4ade80; --warn:#fbbf24; --err:#f87171;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MOV 轉 MP4（無損轉檔）</title>
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --card: #ffffff;
+      --text: #1c1e21;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-text: #ffffff;
+      --border: #d9dde3;
+      --ok: #15803d;
+      --warn: #b45309;
+      --err: #b91c1c;
     }
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-    padding:16px;line-height:1.6}
-  .wrap{max-width:560px;margin:0 auto}
-  h1{font-size:1.4rem;margin:8px 0 4px}
-  .sub{color:var(--muted);font-size:.92rem;margin:0 0 16px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
-  .drop{display:block;border:2px dashed var(--border);border-radius:12px;padding:26px 12px;
-    text-align:center;cursor:pointer;color:var(--muted)}
-  .drop.has{color:var(--text);border-style:solid}
-  .drop input{display:none}
-  .fname{font-weight:600;word-break:break-all}
-  .modes{border:1px solid var(--border);border-radius:12px;margin:14px 0 0;padding:6px 12px}
-  .modes legend{padding:0 6px;font-size:.85rem;color:var(--muted)}
-  .mode{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer}
-  .mode+.mode{border-top:1px solid var(--border)}
-  .mode input{margin-top:5px;flex:none}
-  .mode b{display:block;font-size:.95rem}
-  .mode small{display:block;color:var(--muted);font-size:.8rem;line-height:1.45}
-  .mode.off{opacity:.45;cursor:not-allowed}
-  button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;
-    background:var(--primary);color:var(--primary-text);font-size:1.05rem;font-weight:600;cursor:pointer}
-  button:disabled{opacity:.45;cursor:not-allowed}
-  .bar{height:10px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:14px;display:none}
-  .bar>i{display:block;height:100%;width:0;background:var(--primary);transition:width .2s}
-  .bar.indet>i{width:40%;transition:none;animation:slide 1.2s ease-in-out infinite}
-  @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
-  .status{margin-top:10px;font-size:.92rem;min-height:1.4em}
-  .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
-  a.dl{display:none;margin-top:14px;text-align:center;padding:14px;border-radius:12px;
-    border:2px solid var(--ok);color:var(--ok);font-weight:600;text-decoration:none;word-break:break-all}
-  video{display:none;width:100%;margin-top:14px;border-radius:10px;background:#000}
-  .note{font-size:.82rem;color:var(--muted);margin-top:16px}
-</style>
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14161a;
+        --card: #1e2127;
+        --text: #eceef1;
+        --muted: #9aa3b0;
+        --primary: #3b82f6;
+        --primary-text: #ffffff;
+        --border: #343944;
+        --ok: #4ade80;
+        --warn: #fbbf24;
+        --err: #f87171;
+      }
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      padding: 16px;
+      line-height: 1.6
+    }
+
+    .wrap {
+      max-width: 560px;
+      margin: 0 auto
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 8px 0 4px
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: .92rem;
+      margin: 0 0 16px
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px
+    }
+
+    .drop {
+      display: block;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 26px 12px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--muted)
+    }
+
+    .drop.has {
+      color: var(--text);
+      border-style: solid
+    }
+
+    .drop input {
+      display: none
+    }
+
+    .fname {
+      font-weight: 600;
+      word-break: break-all
+    }
+
+    .modes {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 14px 0 0;
+      padding: 6px 12px
+    }
+
+    .modes legend {
+      padding: 0 6px;
+      font-size: .85rem;
+      color: var(--muted)
+    }
+
+    .mode {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 8px 0;
+      cursor: pointer
+    }
+
+    .mode+.mode {
+      border-top: 1px solid var(--border)
+    }
+
+    .mode input {
+      margin-top: 5px;
+      flex: none
+    }
+
+    .mode b {
+      display: block;
+      font-size: .95rem
+    }
+
+    .mode small {
+      display: block;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.45
+    }
+
+    .mode.off {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--primary);
+      color: var(--primary-text);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .bar {
+      height: 10px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 14px;
+      display: none
+    }
+
+    .bar>i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--primary);
+      transition: width .2s
+    }
+
+    .bar.indet>i {
+      width: 40%;
+      transition: none;
+      animation: slide 1.2s ease-in-out infinite
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translateX(-100%)
+      }
+
+      100% {
+        transform: translateX(250%)
+      }
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: .92rem;
+      min-height: 1.4em
+    }
+
+    .ok {
+      color: var(--ok)
+    }
+
+    .warn {
+      color: var(--warn)
+    }
+
+    .err {
+      color: var(--err)
+    }
+
+    a.dl {
+      display: none;
+      margin-top: 14px;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      border: 2px solid var(--ok);
+      color: var(--ok);
+      font-weight: 600;
+      text-decoration: none;
+      word-break: break-all
+    }
+
+    video {
+      display: none;
+      width: 100%;
+      margin-top: 14px;
+      border-radius: 10px;
+      background: #000
+    }
+
+    .note {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: 16px
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-  <h1>MOV 轉 MP4</h1>
-  <p class="sub">不重新編碼，影像與音訊原封不動，畫質不變。</p>
+  <div class="wrap">
+    <h1>MOV 轉 MP4</h1>
+    <p class="sub">不重新編碼，影像與音訊原封不動，畫質不變。</p>
 
-  <div class="card">
-    <label class="drop" id="drop">
-      <input type="file" id="file" accept=".mov,video/quicktime,video/*">
-      <div id="dropText">點此選擇影片（.mov）</div>
-    </label>
+    <div class="card">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept=".mov,video/quicktime,video/*">
+        <div id="dropText">點此選擇影片（.mov）</div>
+      </label>
 
-    <fieldset class="modes" id="modes">
-      <legend>轉換方式</legend>
-      <label class="mode"><input type="radio" name="mode" value="std" checked>
-        <span><b>標準模式（瀏覽器內轉檔）</b>
-          <small>最嚴謹，輸出標準 MP4。檔案不會離開你的裝置，但會占用大量記憶體，建議 500 MB 以內。</small></span></label>
-      <label class="mode"><input type="radio" name="mode" value="fast">
-        <span><b>大檔模式（改寫檔頭）</b>
-          <small>不占記憶體，可處理數 GB，也不離開你的裝置。只把檔案開頭的格式標籤改成 MP4，內容完全不動；少數嚴格的播放器或剪輯軟體可能不接受。</small></span></label>
-      <label class="mode" id="srvLabel"><input type="radio" name="mode" value="srv">
-        <span><b>伺服器模式（本機 ffmpeg）</b>
-          <small id="srvDesc">由執行本網頁的電腦用原生 ffmpeg 轉檔，無大小限制，輸出標準 MP4。</small></span></label>
-    </fieldset>
+      <fieldset class="modes" id="modes">
+        <legend>轉換方式</legend>
+        <label class="mode"><input type="radio" name="mode" value="std" checked>
+          <span><b>標準模式（瀏覽器內轉檔）</b>
+            <small>最嚴謹，輸出標準 MP4。檔案不會離開你的裝置，但會占用大量記憶體，建議 500 MB 以內。</small></span></label>
+        <label class="mode"><input type="radio" name="mode" value="fast">
+          <span><b>大檔模式（重建索引）</b>
+            <small>不占記憶體，可處理數 GB，也不離開你的裝置。影像與音訊資料原封不動，只重建檔案索引並轉成標準 MP4；會移除拍攝位置、機型等 iPhone 專有中繼資料。</small></span></label>
+        <label class="mode" id="srvLabel"><input type="radio" name="mode" value="srv">
+          <span><b>伺服器模式（本機 ffmpeg）</b>
+            <small id="srvDesc">由執行本網頁的電腦用原生 ffmpeg 轉檔，無大小限制，輸出標準 MP4。</small></span></label>
+      </fieldset>
 
-    <button id="convertBtn" disabled>轉換</button>
+      <button id="convertBtn" disabled>轉換</button>
 
-    <div class="bar" id="bar"><i id="barFill"></i></div>
-    <div class="status" id="status"></div>
+      <div class="bar" id="bar"><i id="barFill"></i></div>
+      <div class="status" id="status"></div>
 
-    <a class="dl" id="dl">下載 MP4</a>
-    <video id="preview" controls playsinline></video>
+      <a class="dl" id="dl">下載 MP4</a>
+      <video id="preview" controls playsinline></video>
+    </div>
+
+    <p class="note">
+      若影片為 HEVC (H.265) 編碼，多數近年 Android 手機可播放，但較舊機型可能需要額外播放器。
+    </p>
   </div>
 
-  <p class="note">
-    若影片為 HEVC (H.265) 編碼，多數近年 Android 手機可播放，但較舊機型可能需要額外播放器。
-  </p>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+  <script>
+    (function () {
+      const $ = id => document.getElementById(id);
+      const fileInput = $('file'), drop = $('drop'), dropText = $('dropText');
+      const btn = $('convertBtn'), bar = $('bar'), fill = $('barFill');
+      const statusEl = $('status'), dl = $('dl'), preview = $('preview');
+      const srvLabel = $('srvLabel'), srvDesc = $('srvDesc');
+      const modeInputs = [...document.querySelectorAll('input[name="mode"]')];
 
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
-<script>
-(function(){
-  const $ = id => document.getElementById(id);
-  const fileInput = $('file'), drop = $('drop'), dropText = $('dropText');
-  const btn = $('convertBtn'), bar = $('bar'), fill = $('barFill');
-  const statusEl = $('status'), dl = $('dl'), preview = $('preview');
-  const srvLabel = $('srvLabel'), srvDesc = $('srvDesc');
-  const modeInputs = [...document.querySelectorAll('input[name="mode"]')];
+      // 單執行緒版核心：不需要 SharedArrayBuffer；進入點叫 main（多執行緒版才是 proxy_main）
+      const CORE_URL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
+      const STD_LIMIT = 500 * 1024 * 1024;
 
-  // 單執行緒版核心：不需要 SharedArrayBuffer；進入點叫 main（多執行緒版才是 proxy_main）
-  const CORE_URL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
-  const STD_LIMIT = 500 * 1024 * 1024;
+      let selected = null, outUrl = null, serverHasFfmpeg = false;
 
-  let selected = null, outUrl = null, serverHasFfmpeg = false;
+      const tick = () => new Promise(r => setTimeout(r, 80));
+      const getMode = () => modeInputs.find(r => r.checked).value;
+      const setMode = v => {modeInputs.find(r => r.value === v).checked = true;};
 
-  const tick = () => new Promise(r => setTimeout(r, 80));
-  const getMode = () => modeInputs.find(r => r.checked).value;
-  const setMode = v => { modeInputs.find(r => r.value === v).checked = true; };
-
-  function setStatus(msg, cls){ statusEl.textContent = msg; statusEl.className = 'status ' + (cls || ''); }
-  function setBar(mode, pct){ // 'off' | 'busy' | 'pct' | 'done'
-    if (mode === 'off'){ bar.style.display = 'none'; bar.classList.remove('indet'); fill.style.width = '0'; return; }
-    bar.style.display = 'block';
-    if (mode === 'busy') bar.classList.add('indet');
-    else { bar.classList.remove('indet'); fill.style.width = (mode === 'done' ? 100 : Math.round(pct * 100)) + '%'; }
-  }
-  function fmtSize(b){
-    return b > 1073741824 ? (b/1073741824).toFixed(2) + ' GB'
-         : b > 1048576 ? (b/1048576).toFixed(1) + ' MB' : (b/1024).toFixed(0) + ' KB';
-  }
-  function resetOutput(){
-    if (outUrl){ URL.revokeObjectURL(outUrl); outUrl = null; }
-    dl.style.display = 'none';
-    preview.style.display = 'none';
-    preview.onerror = null;
-    preview.removeAttribute('src');
-    setBar('off');
-  }
-
-  // ---------- 偵測伺服器是否有 ffmpeg ----------
-  fetch('/api/status').then(r => r.json()).then(j => {
-    serverHasFfmpeg = !!j.ffmpeg;
-  }).catch(() => { serverHasFfmpeg = false; }).finally(() => {
-    const input = srvLabel.querySelector('input');
-    if (!serverHasFfmpeg){
-      input.disabled = true; srvLabel.classList.add('off');
-      srvDesc.textContent = '目前不可用：執行本網頁的電腦未安裝 ffmpeg，或不是透過 server.js 開啟。';
-    }
-  });
-
-  fileInput.addEventListener('change', () => {
-    resetOutput();
-    selected = fileInput.files[0] || null;
-    if (!selected){
-      drop.classList.remove('has');
-      dropText.textContent = '點此選擇影片（.mov）';
-      btn.disabled = true; setStatus('');
-      return;
-    }
-    drop.classList.add('has');
-    dropText.innerHTML = '<span class="fname"></span><br><small>' + fmtSize(selected.size) + '</small>';
-    dropText.querySelector('.fname').textContent = selected.name;
-    btn.disabled = false;
-    // 依檔案大小自動挑選合適的模式（之後仍可手動更改）
-    if (selected.size <= STD_LIMIT){ setMode('std'); setStatus(''); }
-    else if (serverHasFfmpeg){ setMode('srv'); setStatus('檔案較大，已自動改用伺服器模式。', 'warn'); }
-    else { setMode('fast'); setStatus('檔案較大，已自動改用大檔模式。', 'warn'); }
-  });
-  modeInputs.forEach(r => r.addEventListener('change', () => {
-    if (selected && r.value === 'std' && selected.size > STD_LIMIT)
-      setStatus('此檔案超過 500 MB，標準模式可能因記憶體不足而失敗，建議改用其他模式。', 'warn');
-    else setStatus('');
-  }));
-
-  // ---------- 結果顯示 ----------
-  function showResult({ href, size, name, codec, canPreview }){
-    dl.href = href;
-    dl.download = name;
-    dl.textContent = '下載 ' + name + '（' + fmtSize(size) + '）';
-    dl.style.display = 'block';
-    preview.onerror = null;
-    if (canPreview){
-      preview.onerror = () => {
+      function setStatus(msg, cls) {statusEl.textContent = msg; statusEl.className = 'status ' + (cls || '');}
+      function setBar(mode, pct) { // 'off' | 'busy' | 'pct' | 'done'
+        if (mode === 'off') {bar.style.display = 'none'; bar.classList.remove('indet'); fill.style.width = '0'; return;}
+        bar.style.display = 'block';
+        if (mode === 'busy') bar.classList.add('indet');
+        else {bar.classList.remove('indet'); fill.style.width = (mode === 'done' ? 100 : Math.round(pct * 100)) + '%';}
+      }
+      function fmtSize(b) {
+        return b > 1073741824 ? (b / 1073741824).toFixed(2) + ' GB'
+          : b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : (b / 1024).toFixed(0) + ' KB';
+      }
+      function resetOutput() {
+        if (outUrl) {URL.revokeObjectURL(outUrl); outUrl = null;}
+        dl.style.display = 'none';
         preview.style.display = 'none';
-        statusEl.textContent += '（此瀏覽器無法預覽這種影片格式，但檔案已轉換完成，可直接下載後用其他播放器開啟。）';
-      };
-      preview.src = href; preview.style.display = 'block';
-    }
-    setBar('done');
-    if (codec === 'hevc' || codec === 'h265')
-      setStatus('轉換完成。注意：此影片為 HEVC (H.265)，部分舊款 Android 或瀏覽器可能無法直接播放。', 'warn');
-    else setStatus('轉換完成，畫質未變動。', 'ok');
-  }
-
-  // ======================= 標準模式：ffmpeg.wasm =======================
-  async function convertStd(file, name){
-    if (typeof FFmpeg === 'undefined') throw new Error('轉檔引擎載入失敗，請檢查網路後重新整理頁面。');
-    let ff = null, codec = '';
-    const logTail = [];
-    try {
-      setBar('busy');
-      setStatus('正在載入轉檔引擎（首次約需數秒）…');
-      // 單執行緒核心執行完一次指令就會結束，所以每次轉換都建立全新實例
-      ff = FFmpeg.createFFmpeg({ log: false, mainName: 'main', corePath: CORE_URL });
-      ff.setLogger(({ message }) => {
-        logTail.push(message); if (logTail.length > 40) logTail.shift();
-        if (!codec){ const m = /Stream #\d+:\d+.*Video:\s*(\w+)/.exec(message); if (m) codec = m[1].toLowerCase(); }
-      });
-      await ff.load();
-
-      setStatus('讀取檔案…');
-      ff.FS('writeFile', 'input.mov', await FFmpeg.fetchFile(file));
-
-      setStatus('轉換中（僅更換容器，不重新編碼）…請稍候，頁面可能暫時沒有反應。');
-      await tick();
-
-      // 只對應影像與音訊串流，避免 MP4 不支援的資料軌造成錯誤。
-      // -strict unofficial：ffmpeg 預設不會把 Dolby Vision 設定區塊寫進 MP4，不加會遺失 DV 標記。
-      // 單執行緒核心結束時會丟出 ExitStatus：status 0 代表正常結束
-      let exitCode = 0;
-      try {
-        await ff.run('-i', 'input.mov', '-map', '0:v', '-map', '0:a?',
-                     '-c', 'copy', '-strict', 'unofficial', '-movflags', '+faststart', 'output.mp4');
-      } catch (e) {
-        if (e && e.name === 'ExitStatus') exitCode = e.status; else throw e;
+        preview.onerror = null;
+        preview.removeAttribute('src');
+        setBar('off');
       }
-      let data = null;
-      if (exitCode === 0){ try { data = ff.FS('readFile', 'output.mp4'); } catch (_) {} }
-      if (!data || !data.length){
-        const hint = logTail.filter(l => l && l.trim()).slice(-2).join(' / ');
-        throw new Error('無法轉換此檔案，檔案可能損毀或不是有效的影片。' + (hint ? '（' + hint + '）' : ''));
-      }
-      const blob = new Blob([data], { type: 'video/mp4' });
-      outUrl = URL.createObjectURL(blob);
-      showResult({ href: outUrl, size: blob.size, name, codec, canPreview: true });
-    } finally {
-      if (ff){
-        try { ff.FS('unlink', 'input.mov'); } catch (_) {}
-        try { ff.FS('unlink', 'output.mp4'); } catch (_) {}
-      }
-      ff = null;
-    }
-  }
 
-  // ======================= 大檔模式：改寫 ftyp 檔頭 =======================
-  // MOV 與 MP4 同屬 ISO 基本媒體檔案格式，iPhone 的 MOV 內容（H.264/HEVC + AAC）本身就能放在 MP4 裡。
-  // 做法：只把檔案開頭 ftyp 區塊的品牌標籤從 'qt  ' 改成 'mp42'，且保持區塊大小不變，
-  // 所以影像資料（mdat）位置不動，內部的偏移表不需要修改。其餘部分以 Blob 切片引用原檔，不會載入記憶體。
-  // <FAST-MODE>
-  const FOURCC = s => [...s].map(c => c.charCodeAt(0));
-  async function readBytes(file, start, len){
-    return new Uint8Array(await file.slice(start, start + len).arrayBuffer());
-  }
-  function indexOfSeq(hay, seq){
-    outer: for (let i = 0; i <= hay.length - seq.length; i++){
-      for (let j = 0; j < seq.length; j++) if (hay[i + j] !== seq[j]) continue outer;
-      return i;
-    }
-    return -1;
-  }
-  async function listTopLevelBoxes(file){
-    const boxes = []; let pos = 0;
-    while (pos + 8 <= file.size){
-      const h = await readBytes(file, pos, 16);
-      const dv = new DataView(h.buffer);
-      let size = dv.getUint32(0), hdr = 8;
-      const type = String.fromCharCode(h[4], h[5], h[6], h[7]);
-      if (size === 1){ if (h.length < 16) break; size = Number(dv.getBigUint64(8)); hdr = 16; }
-      else if (size === 0){ size = file.size - pos; }
-      if (size < hdr || pos + size > file.size){ boxes.push({ type, pos, size, hdr, broken: true }); break; }
-      boxes.push({ type, pos, size, hdr });
-      pos += size;
-    }
-    return boxes;
-  }
-  async function buildFastMp4(file){
-    const boxes = await listTopLevelBoxes(file);
-    const ftypBox = boxes[0];
-    if (!ftypBox || ftypBox.type !== 'ftyp')
-      throw new Error('此檔案開頭不是標準的 ftyp 區塊，無法使用大檔模式，請改用其他模式。');
-    if (boxes.some(b => b.broken)) throw new Error('檔案似乎不完整（被截斷），無法轉換。');
-    const moov = boxes.find(b => b.type === 'moov');
-    if (!moov) throw new Error('找不到影片資訊區塊（moov），檔案可能不完整。');
-    const size = ftypBox.size;
-    if (size < 16 || size > 4096 || (size - 16) % 4) throw new Error('不支援的 ftyp 格式，請改用其他模式。');
-
-    // 偵測編碼（僅用於 HEVC 相容性提醒）
-    let codec = '';
-    if (moov.size <= 128 * 1024 * 1024){
-      const mb = await readBytes(file, moov.pos, moov.size);
-      const has = s => indexOfSeq(mb, FOURCC(s)) >= 0;
-      codec = (has('hvc1') || has('hev1') || has('dvh1') || has('dvhe')) ? 'hevc' : (has('avc1') ? 'h264' : '');
-    }
-
-    // 新 ftyp：大小與原本完全相同（iPhone 通常是 20 位元組），主品牌改為 mp42
-    const ftyp = new Uint8Array(size);
-    new DataView(ftyp.buffer).setUint32(0, size);
-    ftyp.set(FOURCC('ftyp'), 4);
-    ftyp.set(FOURCC('mp42'), 8);               // 主品牌；次版本號（12–15）維持 0
-    const compat = ['mp42', 'mp41', 'isom'];
-    for (let i = 16, k = 0; i + 4 <= size; i += 4, k++) ftyp.set(FOURCC(compat[k % compat.length]), i);
-
-    return { blob: new Blob([ftyp, file.slice(size)], { type: 'video/mp4' }), codec };
-  }
-  // </FAST-MODE>
-
-  async function convertFast(file, name){
-    setBar('busy');
-    setStatus('正在改寫檔頭…');
-    await tick();
-    const { blob, codec } = await buildFastMp4(file);
-    outUrl = URL.createObjectURL(blob);
-    showResult({ href: outUrl, size: blob.size, name, codec, canPreview: true });
-  }
-
-  // ======================= 伺服器模式：本機 ffmpeg =======================
-  function uploadConvert(file){
-    return new Promise((resolve, reject) => {
-      const x = new XMLHttpRequest();
-      x.open('POST', '/api/convert');
-      x.upload.onprogress = e => {
-        if (e.lengthComputable){
-          setBar('pct', e.loaded / e.total);
-          setStatus('上傳到本機伺服器… ' + Math.round(e.loaded / e.total * 100) + '%');
+      // ---------- 偵測伺服器是否有 ffmpeg ----------
+      fetch('/api/status').then(r => r.json()).then(j => {
+        serverHasFfmpeg = !!j.ffmpeg;
+      }).catch(() => {serverHasFfmpeg = false;}).finally(() => {
+        const input = srvLabel.querySelector('input');
+        if (!serverHasFfmpeg) {
+          input.disabled = true; srvLabel.classList.add('off');
+          srvDesc.textContent = '目前不可用：執行本網頁的電腦未安裝 ffmpeg，或不是透過 server.js 開啟。';
         }
-      };
-      x.upload.onload = () => { setBar('busy'); setStatus('伺服器轉換中（ffmpeg）…'); };
-      x.onload = () => {
-        let j = {}; try { j = JSON.parse(x.responseText); } catch (_) {}
-        x.status === 200 ? resolve(j) : reject(new Error(j.error || ('伺服器錯誤 ' + x.status)));
-      };
-      x.onerror = () => reject(new Error('無法連線到伺服器'));
-      x.send(file);   // 以 File 直接送出，瀏覽器會從磁碟串流讀取，不會整個載入記憶體
-    });
-  }
-  async function convertSrv(file, name){
-    setBar('pct', 0);
-    setStatus('上傳到本機伺服器…');
-    const r = await uploadConvert(file);
-    // 下載由瀏覽器直接從伺服器串流存檔，不經過記憶體
-    showResult({ href: '/api/download/' + r.id + '?name=' + encodeURIComponent(name),
-                 size: r.size, name, codec: r.codec, canPreview: false });
-  }
+      });
 
-  // ======================= 主流程 =======================
-  btn.addEventListener('click', async () => {
-    if (!selected) return;
-    btn.disabled = true; fileInput.disabled = true; modeInputs.forEach(r => r.disabled = true);
-    resetOutput();
-    const base = selected.name.replace(/\.[^.]+$/, '') || 'video';
-    const name = base + '.mp4';
-    try {
-      const mode = getMode();
-      if (mode === 'std') await convertStd(selected, name);
-      else if (mode === 'fast') await convertFast(selected, name);
-      else await convertSrv(selected, name);
-    } catch (e) {
-      console.error(e);
-      setBar('off');
-      const msg = (e && e.message) ? e.message : String(e);
-      const oom = /memory|alloc|abort|OOM|out of/i.test(msg);
-      setStatus('轉換失敗：' + msg + (oom ? '（可能是記憶體不足，請改用「大檔模式」或「伺服器模式」）' : ''), 'err');
-    } finally {
-      btn.disabled = false; fileInput.disabled = false;
-      modeInputs.forEach(r => { r.disabled = (r.value === 'srv' && !serverHasFfmpeg); });
-    }
-  });
-})();
-</script>
+      fileInput.addEventListener('change', () => {
+        resetOutput();
+        selected = fileInput.files[0] || null;
+        if (!selected) {
+          drop.classList.remove('has');
+          dropText.textContent = '點此選擇影片（.mov）';
+          btn.disabled = true; setStatus('');
+          return;
+        }
+        drop.classList.add('has');
+        dropText.innerHTML = '<span class="fname"></span><br><small>' + fmtSize(selected.size) + '</small>';
+        dropText.querySelector('.fname').textContent = selected.name;
+        btn.disabled = false;
+        // 依檔案大小自動挑選合適的模式（之後仍可手動更改）
+        if (selected.size <= STD_LIMIT) {setMode('std'); setStatus('');}
+        else if (serverHasFfmpeg) {setMode('srv'); setStatus('檔案較大，已自動改用伺服器模式。', 'warn');}
+        else {setMode('fast'); setStatus('檔案較大，已自動改用大檔模式。', 'warn');}
+      });
+      modeInputs.forEach(r => r.addEventListener('change', () => {
+        if (selected && r.value === 'std' && selected.size > STD_LIMIT)
+          setStatus('此檔案超過 500 MB，標準模式可能因記憶體不足而失敗，建議改用其他模式。', 'warn');
+        else setStatus('');
+      }));
+
+      // ---------- 結果顯示 ----------
+      function showResult({href, size, name, codec, canPreview}) {
+        dl.href = href;
+        dl.download = name;
+        dl.textContent = '下載 ' + name + '（' + fmtSize(size) + '）';
+        dl.style.display = 'block';
+        preview.onerror = null;
+        if (canPreview) {
+          preview.onerror = () => {
+            preview.style.display = 'none';
+            statusEl.textContent += '（此瀏覽器無法預覽這種影片格式，但檔案已轉換完成，可直接下載後用其他播放器開啟。）';
+          };
+          preview.src = href; preview.style.display = 'block';
+        }
+        setBar('done');
+        if (codec === 'hevc' || codec === 'h265')
+          setStatus('轉換完成。注意：此影片為 HEVC (H.265)，部分舊款 Android 或瀏覽器可能無法直接播放。', 'warn');
+        else setStatus('轉換完成，畫質未變動。', 'ok');
+      }
+
+      // ======================= 標準模式：ffmpeg.wasm =======================
+      async function convertStd(file, name) {
+        if (typeof FFmpeg === 'undefined') throw new Error('轉檔引擎載入失敗，請檢查網路後重新整理頁面。');
+        let ff = null, codec = '';
+        const logTail = [];
+        try {
+          setBar('busy');
+          setStatus('正在載入轉檔引擎（首次約需數秒）…');
+          // 單執行緒核心執行完一次指令就會結束，所以每次轉換都建立全新實例
+          ff = FFmpeg.createFFmpeg({log: false, mainName: 'main', corePath: CORE_URL});
+          ff.setLogger(({message}) => {
+            logTail.push(message); if (logTail.length > 40) logTail.shift();
+            if (!codec) {const m = /Stream #\d+:\d+.*Video:\s*(\w+)/.exec(message); if (m) codec = m[1].toLowerCase();}
+          });
+          await ff.load();
+
+          setStatus('讀取檔案…');
+          ff.FS('writeFile', 'input.mov', await FFmpeg.fetchFile(file));
+
+          setStatus('轉換中（僅更換容器，不重新編碼）…請稍候，頁面可能暫時沒有反應。');
+          await tick();
+
+          // 只對應影像與音訊串流，避免 MP4 不支援的資料軌造成錯誤。
+          // -strict unofficial：ffmpeg 預設不會把 Dolby Vision 設定區塊寫進 MP4，不加會遺失 DV 標記。
+          // -map_metadata 0：保留拍攝時間（否則相簿 App 會改用檔案日期排序）。
+          // 單執行緒核心結束時會丟出 ExitStatus：status 0 代表正常結束
+          let exitCode = 0;
+          try {
+            await ff.run('-i', 'input.mov', '-map', '0:v', '-map', '0:a?',
+              '-c', 'copy', '-map_metadata', '0', '-strict', 'unofficial', '-movflags', '+faststart', 'output.mp4');
+          } catch (e) {
+            if (e && e.name === 'ExitStatus') exitCode = e.status; else throw e;
+          }
+          let data = null;
+          if (exitCode === 0) {try {data = ff.FS('readFile', 'output.mp4');} catch (_) { } }
+          if (!data || !data.length) {
+            const hint = logTail.filter(l => l && l.trim()).slice(-2).join(' / ');
+            throw new Error('無法轉換此檔案，檔案可能損毀或不是有效的影片。' + (hint ? '（' + hint + '）' : ''));
+          }
+          const blob = new Blob([data], {type: 'video/mp4'});
+          outUrl = URL.createObjectURL(blob);
+          showResult({href: outUrl, size: blob.size, name, codec, canPreview: true});
+        } finally {
+          if (ff) {
+            try {ff.FS('unlink', 'input.mov');} catch (_) { }
+            try {ff.FS('unlink', 'output.mp4');} catch (_) { }
+          }
+          ff = null;
+        }
+      }
+
+      // ======================= 大檔模式：重建 moov 索引 =======================
+      // 影像與音訊資料（mdat）完全不動、不載入記憶體；只重建檔尾的 moov 索引並轉成標準 MP4：
+      //  1. 音訊描述：QuickTime 的 version 1（esds 包在 wave 裡）→ 標準 MP4 的 version 0。
+      //     只改 ftyp 品牌而不處理這點，Android 會找不到 AAC 設定，造成「有畫面沒聲音」或判定檔案損毀。
+      //  2. 影片 colr：QuickTime 舊格式 nclc → 標準的 nclx。
+      //  3. 移除 iPhone 專有的中繼資料軌（mebx）與 QuickTime 專有區塊（meta、tapt、tref、csgm、minf 層級 hdlr）。
+      //  4. ftyp 品牌改為 mp42（大小不變）。
+      // moov 若在 mdat 之前，大小改變會使 mdat 位移，會同步修正 stco/co64 位移表。
+      // <FAST-MODE>
+      const FOURCC = s => [...s].map(c => c.charCodeAt(0));
+      const u32 = (b, p) => ((b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3]) >>> 0;
+      const u16 = (b, p) => (b[p] << 8) | b[p + 1];
+      const w32 = (b, p, v) => {b[p] = (v >>> 24) & 255; b[p + 1] = (v >>> 16) & 255; b[p + 2] = (v >>> 8) & 255; b[p + 3] = v & 255;};
+      const t4 = (b, p) => String.fromCharCode(b[p], b[p + 1], b[p + 2], b[p + 3]);
+      const sub = (b, k) => b.subarray(k.start, k.start + k.size);
+
+      async function readBytes(file, start, len) {
+        return new Uint8Array(await file.slice(start, start + len).arrayBuffer());
+      }
+      function indexOfSeq(hay, seq) {
+        outer: for (let i = 0; i <= hay.length - seq.length; i++) {
+          for (let j = 0; j < seq.length; j++) if (hay[i + j] !== seq[j]) continue outer;
+          return i;
+        }
+        return -1;
+      }
+      // 檔案頂層區塊清單（支援 64 位元大小）
+      async function listTopLevelBoxes(file) {
+        const boxes = []; let pos = 0;
+        while (pos + 8 <= file.size) {
+          const h = await readBytes(file, pos, 16);
+          const dv = new DataView(h.buffer);
+          let size = dv.getUint32(0), hdr = 8;
+          const type = String.fromCharCode(h[4], h[5], h[6], h[7]);
+          if (size === 1) {if (h.length < 16) break; size = Number(dv.getBigUint64(8)); hdr = 16;}
+          else if (size === 0) {size = file.size - pos;}
+          if (size < hdr || pos + size > file.size) {boxes.push({type, pos, size, hdr, broken: true}); break;}
+          boxes.push({type, pos, size, hdr});
+          pos += size;
+        }
+        return boxes;
+      }
+
+      // ---- moov 內部重建工具 ----
+      function kids(b, start, end) {
+        const out = []; let p = start;
+        while (p + 8 <= end) {
+          const size = u32(b, p), type = t4(b, p + 4);
+          if (size < 8 || p + size > end) throw new Error('影片資訊區塊（moov）結構異常：' + type);
+          out.push({type, start: p, size});
+          p += size;
+        }
+        return out;
+      }
+      function mk(type, parts) {
+        let len = 8; for (const x of parts) len += x.length;
+        const o = new Uint8Array(len); w32(o, 0, len); o.set(FOURCC(type), 4);
+        let p = 8; for (const x of parts) {o.set(x, p); p += x.length;}
+        return o;
+      }
+
+      // 音訊：QuickTime 的 version 1 描述（esds 包在 wave 裡）→ 標準 MP4 的 version 0（esds 直接放在底下）
+      function fixAudioEntry(ent, ctx) {
+        const version = u16(ent, 16);
+        if (version === 0) return ent;                       // 已是標準格式
+        if (version !== 1) throw new Error('不支援的 QuickTime 音訊描述版本（' + version + '）。');
+        let esds = null;
+        for (const k of kids(ent, 36 + 16, ent.length)) {
+          if (k.type === 'wave') {
+            for (const k2 of kids(ent, k.start + 8, k.start + k.size)) if (k2.type === 'esds') esds = sub(ent, k2);
+          } else if (k.type === 'esds') esds = sub(ent, k);
+        }
+        if (!esds) throw new Error('找不到 AAC 設定（esds），此音訊格式無法在大檔模式處理。');
+        const fixed = new Uint8Array(28);                    // 6 保留 + 2 參照索引 + 8 + 聲道 + 位元數 + 4 + 取樣率
+        fixed.set(ent.subarray(14, 16), 6);                  // data_reference_index
+        fixed.set(ent.subarray(24, 26), 16);                 // channelcount
+        fixed.set(ent.subarray(26, 28), 18);                 // samplesize
+        fixed.set(ent.subarray(32, 36), 24);                 // samplerate（16.16）
+        ctx.audioFixed = true;
+        return mk('mp4a', [fixed, esds]);
+      }
+      // 影片：colr 的 QuickTime 舊格式 nclc → 標準的 nclx（Android 只認 nclx）
+      function fixVideoEntry(ent, ctx) {
+        if (u16(ent, 16) !== 0) return ent;                  // 非一般 version 0，不動
+        const list = kids(ent, 86, ent.length);
+        let changed = false; const parts = [];
+        for (const k of list) {
+          if (k.type === 'colr' && k.size === 18 && t4(ent, k.start + 8) === 'nclc') {
+            const p = new Uint8Array(11);
+            p.set(FOURCC('nclx'), 0); p.set(ent.subarray(k.start + 12, k.start + 18), 4); p[10] = 0; // 0 = 有限範圍（影片用）
+            parts.push(mk('colr', [p])); changed = true; ctx.colrFixed = true;
+          } else parts.push(sub(ent, k));
+        }
+        return changed ? mk(t4(ent, 4), [ent.subarray(8, 86), ...parts]) : ent;
+      }
+      function rebuildStsd(raw, handler, ctx) {
+        if (u32(raw, 12) !== 1 || 16 + u32(raw, 16) !== raw.length) return raw;
+        const ent = raw.subarray(16), type = t4(ent, 4);
+        let out = ent;
+        if (handler === 'soun') {
+          if (type === 'mp4a') out = fixAudioEntry(ent, ctx);
+          else ctx.warnings.push('音訊編碼為 ' + type.trim() + '（非 AAC），在部分 Android 播放器的相容性未知。');
+        } else if (handler === 'vide') out = fixVideoEntry(ent, ctx);
+        return mk('stsd', [raw.subarray(8, 16), out]);
+      }
+      function shiftStco(raw, delta) {
+        if (!delta) return raw;
+        const o = raw.slice(), n = u32(o, 12);
+        for (let i = 0; i < n; i++) {
+          const v = u32(o, 16 + i * 4) + delta;
+          if (v < 0 || v > 0xFFFFFFFF) throw new Error('區塊位移超出 32 位元範圍，請改用其他模式。');
+          w32(o, 16 + i * 4, v);
+        }
+        return o;
+      }
+      function shiftCo64(raw, delta) {
+        if (!delta) return raw;
+        const o = raw.slice(), dv = new DataView(o.buffer, o.byteOffset, o.byteLength), n = u32(o, 12);
+        for (let i = 0; i < n; i++) dv.setBigUint64(16 + i * 8, dv.getBigUint64(16 + i * 8) + BigInt(delta));
+        return o;
+      }
+      function rebuildStbl(raw, handler, ctx) {
+        const parts = [];
+        for (const k of kids(raw, 8, raw.length)) {
+          const r = sub(raw, k);
+          if (k.type === 'stsd') parts.push(rebuildStsd(r, handler, ctx));
+          else if (k.type === 'csgm') continue;              // Apple 專有
+          else if (k.type === 'stco') parts.push(shiftStco(r, ctx.delta));
+          else if (k.type === 'co64') parts.push(shiftCo64(r, ctx.delta));
+          else parts.push(r);
+        }
+        return mk('stbl', parts);
+      }
+      function rebuildMinf(raw, handler, ctx) {
+        const parts = [];
+        for (const k of kids(raw, 8, raw.length)) {
+          if (k.type === 'hdlr') continue;                   // QuickTime 的 minf 層級 hdlr，標準 MP4 沒有
+          parts.push(k.type === 'stbl' ? rebuildStbl(sub(raw, k), handler, ctx) : sub(raw, k));
+        }
+        return mk('minf', parts);
+      }
+      function rebuildMdia(raw, handler, ctx) {
+        const parts = [];
+        for (const k of kids(raw, 8, raw.length))
+          parts.push(k.type === 'minf' ? rebuildMinf(sub(raw, k), handler, ctx) : sub(raw, k));
+        return mk('mdia', parts);
+      }
+      function rebuildTrak(raw, ctx) {
+        const list = kids(raw, 8, raw.length);
+        const mdia = list.find(k => k.type === 'mdia');
+        const hk = mdia && kids(raw, mdia.start + 8, mdia.start + mdia.size).find(k => k.type === 'hdlr');
+        const handler = hk ? t4(raw, hk.start + 16) : '';
+        if (handler !== 'vide' && handler !== 'soun') {ctx.droppedTracks++; return null;}   // 例如 iPhone 的 mebx 中繼資料軌
+        if (handler === 'vide') ctx.videoTracks++;
+        const parts = [];
+        for (const k of list) {
+          if (k.type === 'tapt' || k.type === 'meta' || k.type === 'tref') continue;       // QuickTime 專有 / 參照已移除的軌
+          parts.push(k.type === 'mdia' ? rebuildMdia(sub(raw, k), handler, ctx) : sub(raw, k));
+        }
+        return mk('trak', parts);
+      }
+      function rebuildMoov(moov, delta) {
+        const ctx = {delta, warnings: [], droppedTracks: 0, videoTracks: 0, audioFixed: false, colrFixed: false};
+        const parts = [];
+        for (const k of kids(moov, 8, moov.length)) {
+          if (k.type === 'trak') {const t = rebuildTrak(sub(moov, k), ctx); if (t) parts.push(t);}
+          else if (k.type === 'meta') continue;              // QuickTime 格式的中繼資料（位置、機型等），標準 MP4 不使用
+          else parts.push(sub(moov, k));
+        }
+        if (!ctx.videoTracks) throw new Error('找不到影像軌，無法轉換。');
+        return {bytes: mk('moov', parts), ctx};
+      }
+
+      async function buildFastMp4(file) {
+        const boxes = await listTopLevelBoxes(file);
+        const ftypBox = boxes[0];
+        if (!ftypBox || ftypBox.type !== 'ftyp')
+          throw new Error('此檔案開頭不是標準的 ftyp 區塊，無法使用大檔模式，請改用其他模式。');
+        if (boxes.some(b => b.broken)) throw new Error('檔案似乎不完整（被截斷），無法轉換。');
+        if (boxes.some(b => b.type === 'moof')) throw new Error('此檔案是分段（fragmented）格式，無法使用大檔模式，請改用其他模式。');
+        const moovs = boxes.filter(b => b.type === 'moov');
+        const firstMdat = boxes.find(b => b.type === 'mdat');
+        if (moovs.length !== 1) throw new Error('找不到唯一的影片資訊區塊（moov），檔案可能不完整。');
+        if (!firstMdat) throw new Error('找不到影音資料區塊（mdat）。');
+        const moovBox = moovs[0];
+        if (moovBox.size > 256 * 1024 * 1024) throw new Error('影片資訊區塊過大，請改用其他模式。');
+        const size = ftypBox.size;
+        if (size < 16 || size > 4096 || (size - 16) % 4) throw new Error('不支援的 ftyp 格式，請改用其他模式。');
+
+        const oldMoov = await readBytes(file, moovBox.pos, moovBox.size);
+        let {bytes: newMoov, ctx} = rebuildMoov(oldMoov, 0);
+        if (moovBox.pos < firstMdat.pos) {                    // moov 在 mdat 前面：大小改變會讓 mdat 位移，需同步修正位移表
+          ({bytes: newMoov, ctx} = rebuildMoov(oldMoov, newMoov.length - moovBox.size));
+        }
+
+        // 編碼偵測（僅用於 HEVC 相容性提醒）
+        const has = s => indexOfSeq(oldMoov, FOURCC(s)) >= 0;
+        const codec = (has('hvc1') || has('hev1') || has('dvh1') || has('dvhe')) ? 'hevc' : (has('avc1') ? 'h264' : '');
+
+        // 新 ftyp：大小與原本完全相同，主品牌改為 mp42
+        const ftyp = new Uint8Array(size);
+        w32(ftyp, 0, size); ftyp.set(FOURCC('ftyp'), 4); ftyp.set(FOURCC('mp42'), 8);
+        const compat = ['mp42', 'mp41', 'isom'];
+        for (let i = 16, k = 0; i + 4 <= size; i += 4, k++) ftyp.set(FOURCC(compat[k % compat.length]), i);
+
+        // 其餘區塊（含巨大的 mdat）以 Blob 切片引用原檔，不載入記憶體
+        const parts = [];
+        for (const b of boxes) {
+          if (b === ftypBox) parts.push(ftyp);
+          else if (b === moovBox) parts.push(newMoov);
+          else parts.push(file.slice(b.pos, b.pos + b.size));
+        }
+        return {blob: new Blob(parts, {type: 'video/mp4'}), codec, info: ctx};
+      }
+      // </FAST-MODE>
+
+      async function convertFast(file, name) {
+        setBar('busy');
+        setStatus('正在重建檔案索引…');
+        await tick();
+        const {blob, codec, info} = await buildFastMp4(file);
+        outUrl = URL.createObjectURL(blob);
+        showResult({href: outUrl, size: blob.size, name, codec, canPreview: true});
+        if (info.warnings.length) setStatus(statusEl.textContent + ' ' + info.warnings.join(' '), 'warn');
+      }
+
+      // ======================= 伺服器模式：本機 ffmpeg =======================
+      function uploadConvert(file) {
+        return new Promise((resolve, reject) => {
+          const x = new XMLHttpRequest();
+          x.open('POST', '/api/convert');
+          x.upload.onprogress = e => {
+            if (e.lengthComputable) {
+              setBar('pct', e.loaded / e.total);
+              setStatus('上傳到本機伺服器… ' + Math.round(e.loaded / e.total * 100) + '%');
+            }
+          };
+          x.upload.onload = () => {setBar('busy'); setStatus('伺服器轉換中（ffmpeg）…');};
+          x.onload = () => {
+            let j = {}; try {j = JSON.parse(x.responseText);} catch (_) { }
+            x.status === 200 ? resolve(j) : reject(new Error(j.error || ('伺服器錯誤 ' + x.status)));
+          };
+          x.onerror = () => reject(new Error('無法連線到伺服器'));
+          x.send(file);   // 以 File 直接送出，瀏覽器會從磁碟串流讀取，不會整個載入記憶體
+        });
+      }
+      async function convertSrv(file, name) {
+        setBar('pct', 0);
+        setStatus('上傳到本機伺服器…');
+        const r = await uploadConvert(file);
+        // 下載由瀏覽器直接從伺服器串流存檔，不經過記憶體
+        showResult({
+          href: '/api/download/' + r.id + '?name=' + encodeURIComponent(name),
+          size: r.size, name, codec: r.codec, canPreview: false
+        });
+      }
+
+      // ======================= 主流程 =======================
+      btn.addEventListener('click', async () => {
+        if (!selected) return;
+        btn.disabled = true; fileInput.disabled = true; modeInputs.forEach(r => r.disabled = true);
+        resetOutput();
+        const base = selected.name.replace(/\.[^.]+$/, '') || 'video';
+        const name = base + '.mp4';
+        try {
+          const mode = getMode();
+          if (mode === 'std') await convertStd(selected, name);
+          else if (mode === 'fast') await convertFast(selected, name);
+          else await convertSrv(selected, name);
+        } catch (e) {
+          console.error(e);
+          setBar('off');
+          const msg = (e && e.message) ? e.message : String(e);
+          const oom = /memory|alloc|abort|OOM|out of/i.test(msg);
+          setStatus('轉換失敗：' + msg + (oom ? '（可能是記憶體不足，請改用「大檔模式」或「伺服器模式」）' : ''), 'err');
+        } finally {
+          btn.disabled = false; fileInput.disabled = false;
+          modeInputs.forEach(r => {r.disabled = (r.value === 'srv' && !serverHasFfmpeg);});
+        }
+      });
+    })();
+  </script>
 </body>
+
 </html>
